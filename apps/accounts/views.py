@@ -146,11 +146,10 @@ def update_profile_picture(request):
         return redirect("profile", request.user.id)
     return redirect("profile", request.user.id)
 
-
 def friends(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    users = User.objects.all()
+    users = User.objects.exclude(followers=request.user).exclude(id=request.user.id)
     return render(request, "accounts/friends.html", {"users": users})
 
 
