@@ -1,0 +1,307 @@
+{% extends 'base.html' %} {% block title %} Feed {% endblock %} 
+{% block content%}
+<style>
+  .post-feed {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .post-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    overflow: hidden;
+  }
+
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .post-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .post-user strong {
+    color: #262626;
+    font-size: 14px;
+  }
+
+  .post-meta {
+    color: #8e8e8e;
+    font-size: 12px;
+  }
+
+  .post-media {
+    width: 100%;
+  }
+
+  .post-media img,
+  .post-media video {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .post-actions {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .post-actions button {
+    background: none;
+    border: none;
+    padding: 0;
+    margin-right: 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .post-actions button.liked {
+    color: #ed4956;
+  }
+
+  .post-actions button:hover {
+    transform: scale(1.1);
+  }
+
+  .post-caption {
+    padding: 15px;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #262626;
+  }
+
+  .post-category {
+    padding: 0 15px 15px;
+    color: #8e8e8e;
+    font-size: 12px;
+  }
+
+  .comment-section {
+    padding: 15px;
+    border-top: 1px solid #eee;
+  }
+
+  .comment-form {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .comment-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .comment-submit {
+    padding: 8px 16px;
+    background: #0095f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .comment-submit:hover {
+    background: #0081d6;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 30px;
+  }
+
+  .pagination a {
+    padding: 8px 16px;
+    background: #0095f6;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.2s;
+  }
+
+  .pagination a:hover {
+    background: #0081d6;
+  }
+
+  .current-page {
+    color: #8e8e8e;
+    font-size: 14px;
+  }
+
+  .no-posts {
+    text-align: center;
+    color: #8e8e8e;
+    padding: 40px 0;
+    font-size: 16px;
+  }
+
+  .comment {
+    padding: 8px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .comment:last-child {
+    border-bottom: none;
+    margin-bottom: 15px;
+  }
+
+  .comment strong {
+    margin-right: 8px;
+    color: #262626;
+  }
+
+  .comment-time {
+    color: #8e8e8e;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+</style>
+
+<div class="post-feed">
+  {% for post in posts %}
+  <article class="post-card">
+    <div class="post-header">
+      <div class="post-user">
+        <img
+          src="{{ post.publisher.profile_picture|default:'https://static.vecteezy.com/system/resources/thumbnails/036/280/650/small/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg' }}"
+          alt="{{ post.publisher.username }}"
+          class="profile-pic"
+        />
+        <strong>{{ post.publisher.username }}</strong>
+      </div>
+      <div class="post-meta">{{ post.created_at|timesince }} ago</div>
+    </div>
+
+    <div class="post-media">
+      {% if post.media_type == 'IMAGE' %}
+      <img
+        src="{{ post.media_url }}"
+        alt="{{ post.caption|truncatewords:10 }}"
+      />
+      {% else %}
+      <video controls>
+        <source src="{{ post.media_url }}" />
+        Your browser does not support the video tag.
+      </video>
+      {% endif %}
+    </div>
+
+    <div class="post-actions">
+      <button
+        class="like-button {% if post.is_liked %}liked{% endif %}"
+        data-post-id="{{ post.id }}"
+        onclick="toggle_like({{ post.id }})"
+      >
+        {% if post.is_liked %} ❤️ {% else %} 🤍 {% endif %}
+        <span class="likes-count">{{ post.likes_count }}</span>
+      </button>
+      <button class="comment-button">
+        💬 <span class="comments-count">{{ post.comments_count }}</span>
+      </button>
+    </div>
+
+    <div class="post-caption">
+      <strong>{{ post.publisher.username }}</strong> {{ post.caption }}
+    </div>
+
+    <div class="post-category">Category: {{ post.get_category_display }}</div>
+    <div class="post-comments mx-3">
+      {% for comment in post.post_comments.all %}
+      <div class="comment d-flex align-items-start gap-2 py-2">
+        <strong class="text-dark">{{ comment.user.username }}</strong>
+        <span class="comment-text flex-grow-1 text-break">{{ comment.text }}</span>
+        <small class="text-muted ms-2">{{ comment.created_at|timesince }} ago</small>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="comment-section">
+      <form
+        class="comment-form"
+        method="POST"
+        action="{% url 'add_comment' post.id %}"
+      >
+        {% csrf_token %}
+        <input
+          type="text"
+          name="text"
+          class="comment-input"
+          placeholder="Add a comment..."
+          required
+        />
+        <button type="submit" class="comment-submit">Post</button>
+      </form>
+    </div>
+  </article>
+  {% empty %}
+  <p class="no-posts">No posts yet.</p>
+  {% endfor %} {% if is_paginated %}
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span class="current-page">
+      Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">Next</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+
+<script>
+  function toggle_like(post_id) {
+    fetch(`/accounts/toggle_like/${post_id}/`, {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const likeButton = document.querySelector(
+          `button[data-post-id="${post_id}"]`
+        );
+        const likesCount = likeButton.querySelector(".likes-count");
+
+        likesCount.textContent = data.likes_count;
+        if (data.is_liked) {
+          likeButton.classList.add("liked");
+          likeButton.innerHTML = `❤️ <span class="likes-count">${data.likes_count}</span>`;
+        } else {
+          likeButton.classList.remove("liked");
+          likeButton.innerHTML = `🤍 <span class="likes-count">${data.likes_count}</span>`;
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+</script>
+{% endblock %}

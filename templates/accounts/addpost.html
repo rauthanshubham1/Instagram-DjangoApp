@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}
+Add Post
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Create New Post</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="caption">Caption</label>
+                            <textarea class="form-control" id="caption" name="caption" rows="3" maxlength="2000" required></textarea>
+                        </div>
+
+                        <!-- Media URL -->
+                        <div class="form-group mb-3">
+                            <label for="media_url">Media URL</label>
+                            <input type="url" class="form-control" id="media_url" name="media_url" 
+                                   placeholder="Enter image or video URL" required>
+                        </div>
+
+                        <!-- Media Type -->
+                        <div class="form-group mb-3">
+                            <label for="media_type">Media Type</label>
+                            <select class="form-control" id="media_type" name="media_type" required>
+                                <option value="IMAGE">Image</option>
+                                <option value="VIDEO">Video</option>
+                            </select>
+                        </div>
+
+                        <!-- Category -->
+                        <div class="form-group mb-3">
+                            <label for="category">Category</label>
+                            <select class="form-control" id="category" name="category" required>
+                                <option value="TECH">Technology</option>
+                                <option value="ENT">Entertainment</option>
+                                <option value="BUS">Business</option>
+                                <option value="LIFE">Lifestyle</option>
+                                <option value="FOOD">Food</option>
+                                <option value="TRAV">Travel</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

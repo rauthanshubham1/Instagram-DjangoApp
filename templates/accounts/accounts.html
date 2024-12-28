@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}
+Profile
+{% endblock %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Profile Info Card -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-center mb-3">
+            {% if user.profile_picture %}
+              <img src="{{ user.profile_picture }}"
+                   class="rounded-circle"
+                   width="100"
+                   height="100"
+                   alt="Profile Picture" />
+            {% else %}
+              <img src="https://static.vecteezy.com/system/resources/thumbnails/036/280/650/small/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg"
+                   class="rounded-circle"
+                   width="100"
+                   height="100"
+                   alt="Default Profile" />
+            {% endif %}
+            <div class="mt-2">
+              <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#changeProfilePicModal">
+                Change Profile Picture
+              </button>
+            </div>
+          </div>
+          <h5 class="card-title text-center">{{ user.username }}</h5>
+          <div class="d-flex justify-content-around mt-3">
+            <div class="text-center">
+              <h6>Posts</h6>
+              <span class="badge bg-primary">{{ user.posts.count }}</span>
+            </div>
+            <div class="text-center">
+              <h6>Followers</h6>
+              <span class="badge bg-primary">{{ user.followers.count }}</span>
+            </div>
+            <div class="text-center">
+              <h6>Following</h6>
+              <span class="badge bg-primary">{{ user.following.count }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Posts Grid -->
+    <div class="col-md-8">
+      <div class="row">
+        {% for post in user.posts.all %}
+          <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ post.media_url }}"
+                     class="card-img-top"
+                     alt="Post Image"
+                     style="height: 200px; object-fit: cover" />
+                <div class="card-body">
+                  <p class="card-text">{{ post.caption|truncatechars:50 }}</p>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <i class="fas fa-heart"></i> {{ post.likes_count }} Likes 
+                      <i class="fas fa-comment ms-2"></i>{{ post.comments_count }} Comments
+                    </div>
+                  </div>
+                  <small class="text-muted">{{ post.created_at|timesince }} ago</small>
+                </div>
+              </a>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12">
+            <p class="text-center">No posts yet.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Picture Modal -->
+<div class="modal fade" id="changeProfilePicModal" tabindex="-1" aria-labelledby="changeProfilePicModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changeProfilePicModalLabel">Change Profile Picture</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'update_profile_picture' %}" method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="profile_picture" class="form-label">Enter profile picture URL</label>
+            <input type="url" class="form-control" id="profile_picture" name="profile_picture" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

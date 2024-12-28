@@ -1,0 +1,91 @@
+{% extends 'base.html' %} {% block title %} Friends 
+{% endblock %} 
+{% block content %}
+<style>
+  .friends-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .friend-card {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: white;
+  }
+
+  .friend-profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+  }
+
+  .friend-info {
+    flex-grow: 1;
+  }
+
+  .friend-username {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+  }
+
+  .follow-button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0095f6;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .follow-button:hover {
+    background-color: #0074cc;
+  }
+
+  .follow-button.following {
+    background-color: #efefef;
+    color: #262626;
+  }
+
+  .no-friends {
+    text-align: center;
+    color: #8e8e8e;
+    padding: 40px 0;
+  }
+</style>
+
+<div class="friends-container">
+  {% if users %} 
+  {% for user in users %}
+  <div class="friend-card">
+    <img
+      src="{{ user.profile_picture|default:'https://static.vecteezy.com/system/resources/thumbnails/036/280/650/small/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg' }}"
+      alt="{{ user.username }}"
+      class="friend-profile-pic"
+    />
+    <div class="friend-info">
+      <div class="friend-username">{{ user.username }}</div>
+    </div>
+    <button
+      class="follow-button {% if user.is_following %}following{% endif %}"
+      onclick="toggleFollow({{ user.id }})"
+    >
+      {% if user.is_following %}Following{% else %}Follow{% endif %}
+    </button>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="no-friends">
+    <p>No users found to follow</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
