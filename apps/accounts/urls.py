@@ -12,6 +12,7 @@ urlpatterns = [
     path("accounts/update_profile_picture/", views.update_profile_picture, name="update_profile_picture"),
     path("accounts/addpost/", views.addpost, name="addpost"),
     path("accounts/friends/", views.friends, name="friends"),
+    path("accounts/follow/<int:user_id>/", views.followUser, name="follow"),
     path("accounts/logout/", views.user_logout, name="logout"),
 ]
 

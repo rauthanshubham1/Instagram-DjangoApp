@@ -1,5 +1,4 @@
-{% extends 'base.html' %} {% block title %} Friends 
-{% endblock %} 
+{% extends 'base.html' %} {% block title %} Friends {% endblock %} 
 {% block content %}
 <style>
   .friends-container {
@@ -63,8 +62,7 @@
 </style>
 
 <div class="friends-container">
-  {% if users %} 
-  {% for user in users %}
+  {% if users %} {% for user in users %}
   <div class="friend-card">
     <img
       src="{{ user.profile_picture|default:'https://static.vecteezy.com/system/resources/thumbnails/036/280/650/small/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg' }}"
@@ -74,13 +72,23 @@
     <div class="friend-info">
       <div class="friend-username">{{ user.username }}</div>
       <div class="friend-stats">
-        <span class="followers-count">Followers: <span id="followers-{{ user.id }}">{{ user.followers.count }}</span></span>
-        <span class="following-count">Following: <span id="following-{{ user.id }}">{{ user.following.count }}</span></span>
+        <span class="followers-count"
+          >Followers:
+          <span id="followers-{{ user.id }}"
+            >{{ user.followers.count }}</span
+          ></span
+        >
+        <span class="following-count"
+          >Following:
+          <span id="following-{{ user.id }}"
+            >{{ user.following.count }}</span
+          ></span
+        >
       </div>
     </div>
     <button
       class="follow-button {% if user.is_following %}following{% endif %}"
-      onclick="toggleFollow({{ user.id }})"
+      onclick="window.location.href='{% url 'follow' user.id %}'"
     >
       {% if user.is_following %}Following{% else %}Follow{% endif %}
     </button>
@@ -88,8 +96,7 @@
       See Profile
     </a>
   </div>
-  {% endfor %}
-  {% else %}
+  {% endfor %} {% else %}
   <div class="no-friends">
     <p>No users found to follow</p>
   </div>
@@ -97,59 +104,65 @@
 </div>
 
 <script>
-function toggleFollow(userId) {
-  fetch(`/toggle_follow/${userId}/`, {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': getCookie('csrftoken'),
-    },
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.status === 'success') {
-      const button = event.target;
-      const followersCount = document.getElementById(`followers-${userId}`);
-      const followingCount = document.getElementById(`following-${userId}`);
-      
-      if (data.is_following) {
-        button.classList.add('following');
-        button.textContent = 'Following';
-        // Increment followers count for target user
-        followersCount.textContent = parseInt(followersCount.textContent) + 1;
-        // Increment following count for current user
-        const currentUserFollowing = document.querySelector('.nav-link .badge.following-count');
-        if (currentUserFollowing) {
-          currentUserFollowing.textContent = parseInt(currentUserFollowing.textContent) + 1;
-        }
-      } else {
-        button.classList.remove('following');
-        button.textContent = 'Follow';
-        // Decrement followers count for target user
-        followersCount.textContent = parseInt(followersCount.textContent) - 1;
-        // Decrement following count for current user
-        const currentUserFollowing = document.querySelector('.nav-link .badge.following-count');
-        if (currentUserFollowing) {
-          currentUserFollowing.textContent = parseInt(currentUserFollowing.textContent) - 1;
-        }
-      }
-    }
-  })
-  .catch(error => console.error('Error:', error));
-}
+  function toggleFollow(userId) {
+    fetch(`/toggle_follow/${userId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "success") {
+          const button = event.target;
+          const followersCount = document.getElementById(`followers-${userId}`);
+          const followingCount = document.getElementById(`following-${userId}`);
 
-function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
+          if (data.is_following) {
+            button.classList.add("following");
+            button.textContent = "Following";
+
+            followersCount.textContent =
+              parseInt(followersCount.textContent) + 1;
+
+            const currentUserFollowing = document.querySelector(
+              ".nav-link .badge.following-count"
+            );
+            if (currentUserFollowing) {
+              currentUserFollowing.textContent =
+                parseInt(currentUserFollowing.textContent) + 1;
+            }
+          } else {
+            button.classList.remove("following");
+            button.textContent = "Follow";
+            followersCount.textContent =
+              parseInt(followersCount.textContent) - 1;
+            const currentUserFollowing = document.querySelector(
+              ".nav-link .badge.following-count"
+            );
+            if (currentUserFollowing) {
+              currentUserFollowing.textContent =
+                parseInt(currentUserFollowing.textContent) - 1;
+            }
+          }
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
       }
     }
+    return cookieValue;
   }
-  return cookieValue;
-}
 </script>
 {% endblock %}

@@ -146,11 +146,28 @@ def update_profile_picture(request):
         return redirect("profile", request.user.id)
     return redirect("profile", request.user.id)
 
+
 def friends(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    users = User.objects.exclude(followers=request.user).exclude(id=request.user.id)
+    users = User.objects.exclude(
+        followers=request.user).exclude(id=request.user.id)
     return render(request, "accounts/friends.html", {"users": users})
+
+
+def followUser(request, user_id):
+    user_to_follow = get_object_or_404(User, id=user_id)
+    if request.user.is_authenticated:
+        if request.user != user_to_follow:
+            if request.user in user_to_follow.followers.all():
+                user_to_follow.followers.remove(request.user)
+                request.user.following.remove(user_to_follow)
+            else:
+                user_to_follow.followers.add(request.user)
+                request.user.following.add(user_to_follow)
+            user_to_follow.save()
+            request.user.save()
+    return redirect('profile', user_id=user_id)
 
 
 def user_logout(request):
