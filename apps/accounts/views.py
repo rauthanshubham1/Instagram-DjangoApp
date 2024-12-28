@@ -150,9 +150,15 @@ def update_profile_picture(request):
 def friends(request):
     if not request.user.is_authenticated:
         return redirect('login')
-    users = User.objects.exclude(
-        followers=request.user).exclude(id=request.user.id)
-    return render(request, "accounts/friends.html", {"users": users})
+    users = User.objects.exclude(id=request.user.id)
+    users_data = [
+        {
+            'user': user,
+            'is_following': request.user in user.followers.all()
+        }
+        for user in users
+    ]
+    return render(request, "accounts/friends.html", {"users": users_data})
 
 
 def followUser(request, user_id):

@@ -1,3 +1,17 @@
+## ⚠️ IMPORTANT PERFORMANCE NOTE ⚠️
+
+<div style="color: red; border: 2px solid red; padding: 1em; margin: 1em 0; background-color: #ffebee;">
+
+Since this application is hosted on Vercel's free tier:
+
+- Cold starts may take a few seconds ⏳
+- Database operations might experience slight delays 🔄
+- Image loading could be slower during peak times 🖼️
+
+Please be patient while using the application as these limitations are due to the free hosting environment.
+
+</div>
+
 # Instagram Clone
 
 A Django-based Instagram clone with core social media features.
@@ -23,12 +37,3 @@ You can access the live demo here: [Instagram Clone Demo](https://instagram-djan
 - Bootstrap 5 (Frontend)
 - RailwaysSQL (Database)
 - Vercel (Hosting)
-
-## Note on Performance
-
-Since this application is hosted on Vercel's free tier:
-- Cold starts may take a few seconds
-- Database operations might experience slight delays
-- Image loading could be slower during peak times
-
-Please be patient while using the application as these limitations are due to the free hosting environment.

@@ -62,37 +62,37 @@
 </style>
 
 <div class="friends-container">
-  {% if users %} {% for user in users %}
+  {% if users %} {% for user_data in users %}
   <div class="friend-card">
     <img
-      src="{{ user.profile_picture|default:'https://static.vecteezy.com/system/resources/thumbnails/036/280/650/small/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg' }}"
-      alt="{{ user.username }}"
+      src="{{ user_data.user.profile_picture|default:'https://static.vecteezy.com/system/resources/thumbnails/036/280/650/small/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-illustration-vector.jpg' }}"
+      alt="{{ user_data.user.username }}"
       class="friend-profile-pic"
     />
     <div class="friend-info">
-      <div class="friend-username">{{ user.username }}</div>
+      <div class="friend-username">{{ user_data.user.username }}</div>
       <div class="friend-stats">
         <span class="followers-count"
           >Followers:
-          <span id="followers-{{ user.id }}"
-            >{{ user.followers.count }}</span
+          <span id="followers-{{ user_data.user.id }}"
+            >{{ user_data.user.followers.count }}</span
           ></span
         >
         <span class="following-count"
           >Following:
-          <span id="following-{{ user.id }}"
-            >{{ user.following.count }}</span
+          <span id="following-{{ user_data.user.id }}"
+            >{{ user_data.user.following.count }}</span
           ></span
         >
       </div>
     </div>
     <button
-      class="follow-button {% if user.is_following %}following{% endif %}"
-      onclick="window.location.href='{% url 'follow' user.id %}'"
+      class="follow-button {% if user_data.is_following %}following{% endif %}"
+      onclick="window.location.href='{% url 'follow' user_data.user.id %}'"
     >
-      {% if user.is_following %}Following{% else %}Follow{% endif %}
+      {% if user_data.is_following %}Following{% else %}Follow{% endif %}
     </button>
-    <a href="{% url 'profile' user_id=user.id %}" class="profile-button">
+    <a href="{% url 'profile' user_id=user_data.user.id %}" class="profile-button">
       See Profile
     </a>
   </div>
