@@ -6,7 +6,7 @@ A Django-based Instagram clone with core social media features.
 
 This application is deployed on Vercel's free tier servers. Please note that initial loads and database operations may be slower due to the free tier limitations.
 
-You can access the live demo here: [Instagram Clone Demo](instagram-django-app.vercel.app)
+You can access the live demo here: [Instagram Clone Demo](https://instagram-django-app.vercel.app)
 
 ## Features
 
